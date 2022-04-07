@@ -32,7 +32,7 @@ class SQLiteConverter():
         self.__connection = connection
         self.__logger = logger
 
-    def import_dbf(self, dbf_path, lowernames=True, encoding="cp850", char_decode_errors="strict"):
+    def import_dbf(self, dbf_path, lowernames=True, encoding="cp850", char_decode_errors="strict", ignore_missing_memofile=False):
         """Import a dbf database to the current sqlite connection"""
         self.__check_path(dbf_path)
         cursor = self.__connection.cursor()
@@ -42,7 +42,7 @@ class SQLiteConverter():
             file_count += 1
             self.__logger.info("import dbf file #{}: {}".format(file_count, fpath))
             dbf_table = dbfread.DBF(fpath, lowernames=lowernames, encoding=encoding,
-                                char_decode_errors=char_decode_errors)
+                                char_decode_errors=char_decode_errors, ignore_missing_memofile=ignore_missing_memofile)
             SQLiteConverterWorker(self.__logger, cursor, dbf_table).import_dbf_file()
 
         if file_count:

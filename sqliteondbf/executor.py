@@ -104,8 +104,8 @@ class SQLiteExecutor():
             raise Exception ("bad kw")
         self.__cursor = self.__connection.cursor()
 
-    def __convert(self, e, dbf_path, sqlite_path, encoding="cp850"):
-        self.__connection = convert(dbf_path, sqlite_path, logger=self.__logger, encoding=encoding)
+    def __convert(self, e, dbf_path, sqlite_path, encoding="cp850", ignore_missing_memofile=False):
+        self.__connection = convert(dbf_path, sqlite_path, logger=self.__logger, encoding=encoding, ignore_missing_memofile=ignore_missing_memofile)
         self.__cursor = self.__connection.cursor()
 
     @query_required
@@ -175,11 +175,11 @@ def connect(dbf_path, logger=logging.getLogger("sqliteondbf"), lowernames=True, 
     """take a dBase (= set of dbf files) directory and return a SQLite connection over the database"""
     return convert(dbf_path, ":memory:", logger=logger, lowernames=lowernames, encoding=encoding, char_decode_errors=char_decode_errors)
 
-def convert(dbf_path, sqlite_path, logger=logging.getLogger("sqliteondbf"), lowernames=True, encoding="cp850", char_decode_errors="strict"):
+def convert(dbf_path, sqlite_path, logger=logging.getLogger("sqliteondbf"), lowernames=True, encoding="cp850", char_decode_errors="strict", ignore_missing_memofile=False):
     """convert a dBase (= set of dbf files) directory to a SQLite file and return a SQLite connection over the database"""
     logger.info("import {} to {}".format(dbf_path, sqlite_path))
     connection = sqlite3.connect(sqlite_path)
-    _SQLiteConverter(connection, logger).import_dbf(dbf_path, encoding=encoding, lowernames=lowernames, char_decode_errors=char_decode_errors)
+    _SQLiteConverter(connection, logger).import_dbf(dbf_path, encoding=encoding, lowernames=lowernames, char_decode_errors=char_decode_errors, ignore_missing_memofile=ignore_missing_memofile)
     return connection
 
 def export(cursor, csv_path, logger=logging.getLogger("sqliteondbf")):
